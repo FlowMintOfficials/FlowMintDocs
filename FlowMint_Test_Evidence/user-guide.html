@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlowMint Test Evidence — User Guide</title>
+  <meta name="description" content="User guide for FlowMint Test Evidence: record user actions with screenshots, generate reports, export as PDF, HTML, or JSON. Built for QA and documentation." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>
+    (function() {
+      var base;
+      if (location.hostname.indexOf('github.io') !== -1) {
+        var m = location.pathname.match(/^(\/[^/]+\/)/);
+        base = m ? (location.origin + m[1]) : (location.origin + '/');
+      } else {
+        var href = location.href;
+        if (href.indexOf('FlowMint_Test_Evidence/') !== -1)
+          base = href.replace(/\/FlowMint_Test_Evidence\/[^/]*$/, '/');
+        else if (href.indexOf('FlowMint_Recorder/') !== -1)
+          base = href.replace(/\/FlowMint_Recorder\/[^/]*$/, '/');
+        else
+          base = href.replace(/#.*$/, '').replace(/[^/]*$/, '');
+      }
+      var el = document.createElement('base');
+      el.href = base;
+      document.head.appendChild(el);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #000000;
+      --bg-mesh: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(20, 184, 166, 0.08) 0%, transparent 50%),
+                 radial-gradient(ellipse 60% 40% at 100% 50%, rgba(15, 118, 110, 0.05) 0%, transparent 50%),
+                 #000000;
+      --surface: rgba(18, 18, 18, 0.95);
+      --surface-solid: #0a0a0a;
+      --surface-elevated: rgba(30, 30, 30, 0.9);
+      --border: rgba(148, 163, 184, 0.1);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #34d1bf;
+      --accent-dim: rgba(52, 209, 191, 0.12);
+      --primary: #14b8a6;
+      --gradient: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+      --shadow-glow: 0 0 40px -10px rgba(20, 184, 166, 0.15);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg-mesh);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .site-header {
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .site-header-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .site-header a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .site-header a:hover { color: var(--accent); text-decoration: none; }
+    .logo {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(20, 184, 166, 0.25);
+    }
+    .logo svg { display: block; width: 100%; height: 100%; }
+    .site-header .brand {
+      font-weight: 700;
+      font-size: 1.125rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .site-header .brand span { color: var(--text-muted); font-weight: 500; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2.5rem;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; padding: 1.5rem 1rem 3rem; }
+    }
+
+    .toc-wrap { position: sticky; top: 5.5rem; }
+    @media (max-width: 960px) {
+      .toc-wrap { position: static; margin-bottom: 1.5rem; }
+    }
+    .toc {
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .toc-title {
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin: 0 0 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin-bottom: 0.2rem; }
+    .toc a {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: color .2s, background .2s;
+    }
+    .toc a:hover {
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .main { min-width: 0; }
+
+    .section {
+      background: var(--surface);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.25rem 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .section::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--gradient);
+      border-radius: 4px 0 0 4px;
+    }
+    .section h2 {
+      font-size: 1.3125rem;
+      font-weight: 700;
+      margin: 0 0 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .section h2 .num {
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.35);
+    }
+    .section h3 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.5rem;
+      color: var(--accent);
+    }
+    .section h3:first-of-type { margin-top: 0; }
+    .section p { margin: 0 0 1rem; }
+    .section ul, .section ol {
+      margin: 0 0 1rem;
+      padding-left: 1.5rem;
+    }
+    .section li { margin-bottom: 0.45rem; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+    }
+    .step {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      font-weight: 500;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .step:hover {
+      border-color: rgba(52, 209, 191, 0.3);
+      box-shadow: var(--shadow-glow);
+    }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--gradient);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.8125rem;
+      font-weight: 700;
+    }
+    .step span:last-child { flex: 1; }
+
+    .callout {
+      background: var(--accent-dim);
+      border: 1px solid rgba(52, 209, 191, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+      font-size: 0.9375rem;
+    }
+    .callout strong { color: var(--accent); }
+
+    code {
+      background: var(--surface-elevated);
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      font-size: 0.875em;
+      font-family: ui-monospace, monospace;
+      color: var(--accent);
+    }
+    pre {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 1.25rem 1.5rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      font-size: 0.8125rem;
+      margin: 1.25rem 0;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.9375rem;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 0.875rem 1.25rem;
+      text-align: left;
+    }
+    tr:last-child td { border-bottom: none; }
+    th {
+      background: var(--surface-elevated);
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    td { color: var(--text-muted); }
+    td strong { color: var(--text); }
+
+    .dev-note {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface-solid);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border-left: 4px solid var(--primary);
+    }
+    .dev-note strong { color: var(--text); }
+
+    .site-footer {
+      margin-top: 3rem;
+      padding: 2rem 0;
+      background: #000000;
+      border-top: 1px solid var(--border);
+    }
+    .site-footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .site-footer .logo { width: 32px; height: 32px; border-radius: 8px; }
+    .site-footer-left { display: flex; align-items: center; gap: 0.75rem; }
+    .site-footer-copy { font-size: 0.875rem; color: var(--text-muted); margin: 0; }
+    .site-footer-links { display: flex; align-items: center; gap: 1.25rem; font-size: 0.875rem; }
+    .site-footer-links a { color: var(--text-muted); }
+    .site-footer-links a:hover { color: var(--accent); }
+    footer.main-footer {
+      grid-column: 1 / -1;
+      margin-top: 1.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    @media print {
+      body { background: #fff; color: #111; }
+      .site-header { background: #f1f5f9; border-color: #e2e8f0; backdrop-filter: none; }
+      .site-footer { background: #f1f5f9; border-color: #e2e8f0; }
+      .layout { grid-template-columns: 1fr; }
+      .section { background: #f8fafc; border-color: #e2e8f0; backdrop-filter: none; }
+      .section::before { display: none; }
+      .toc { background: #f8fafc; border-color: #e2e8f0; backdrop-filter: none; }
+      .toc a { color: #475569; }
+      .step { background: #f1f5f9; }
+      code { background: #e2e8f0; color: #0f766e; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header" role="banner">
+    <div class="site-header-inner">
+      <a href="index.html" aria-label="FlowMint home">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <rect width="128" height="128" rx="28" fill="#0d9488"/>
+            <rect x="14" y="14" width="100" height="100" rx="8" fill="white" opacity="0.98"/>
+            <path d="M114 14v16h-16L114 14z" fill="white" opacity="0.9"/>
+            <circle cx="64" cy="64" r="22" fill="#0d9488"/>
+            <path d="M52 64l12 12 24-24" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            <defs>
+              <linearGradient id="logo-grad-te" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0f766e"/>
+                <stop offset="0.5" stop-color="#0d9488"/>
+                <stop offset="1" stop-color="#14b8a6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand">FlowMint Test Evidence <span>— User Guide</span></span>
+      </a>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc-wrap" aria-label="Table of contents">
+      <div class="toc">
+        <div class="toc-title">Contents</div>
+        <ul>
+          <li><a href="#intro">1. Introduction</a></li>
+          <li><a href="#install">2. Installation</a></li>
+          <li><a href="#quick-start">3. Quick start</a></li>
+          <li><a href="#side-panel">4. Side panel</a></li>
+          <li><a href="#recording">5. Recording</a></li>
+          <li><a href="#report">6. Report &amp; steps</a></li>
+          <li><a href="#export">7. Export</a></li>
+          <li><a href="#sessions">8. Sessions</a></li>
+          <li><a href="#settings">9. Settings</a></li>
+          <li><a href="#tips">10. Tips</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="main">
+      <section class="section" id="intro">
+        <h2><span class="num">1</span> Introduction</h2>
+        <p>FlowMint Test Evidence is a browser extension that lets you <strong>record</strong> user actions (clicks, typing, form submits, navigation) with <strong>screenshots</strong>, <strong>generate a report</strong> with all steps and images, and <strong>export</strong> as <strong>PDF</strong>, <strong>HTML</strong>, or <strong>JSON</strong>. Built for QA and documentation — capture test evidence without writing code.</p>
+        <p>All data is stored locally in your browser; no external servers or analytics.</p>
+      </section>
+
+      <section class="section" id="install">
+        <h2><span class="num">2</span> Installation</h2>
+        <p>Install FlowMint Test Evidence from the browser store — no build or command line required.</p>
+        <ol>
+          <li>Open the <strong>Chrome Web Store</strong> (or <strong>Edge Add-ons</strong> / <strong>Firefox Add-ons</strong>).</li>
+          <li>Search for <strong>FlowMint Test Evidence</strong> or use the direct link from the FlowMint website.</li>
+          <li>Click <strong>Add to Chrome</strong> (or <strong>Get</strong> / <strong>Add to Firefox</strong>) and confirm.</li>
+          <li>Pin the extension to the toolbar for quick access.</li>
+        </ol>
+        <p>To use it: click the FlowMint Test Evidence icon. The <strong>side panel</strong> opens. From there you can start recording, view the report, save or load sessions, and export.</p>
+        <div class="dev-note">
+          <strong>Developers:</strong> To build from source, run <code>npm install && npm run build</code>, then in <code>chrome://extensions/</code> turn on Developer mode and use <strong>Load unpacked</strong> to select the <code>dist</code> folder.
+        </div>
+      </section>
+
+      <section class="section" id="quick-start">
+        <h2><span class="num">3</span> Quick start</h2>
+        <div class="steps">
+          <div class="step"><span class="step-num">1</span><span>Open the website where you want to record (e.g. your app or test environment) in the same browser.</span></div>
+          <div class="step"><span class="step-num">2</span><span>Click the extension icon to open the side panel, then click <strong>Start recording</strong>.</span></div>
+          <div class="step"><span class="step-num">3</span><span>Perform actions on the page: click, type, change selects or checkboxes, submit forms, navigate. Each action is recorded with a <strong>screenshot</strong> (the target element is briefly highlighted in the capture).</span></div>
+          <div class="step"><span class="step-num">4</span><span>Click <strong>Stop recording</strong>. A <strong>report</strong> is generated automatically with all steps and screenshots.</span></div>
+          <div class="step"><span class="step-num">5</span><span>Use <strong>View report</strong> to see the full report in the extension, or export: <strong>Save PDF</strong>, <strong>HTML</strong>, or <strong>JSON</strong> from the popup or from the report page.</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="side-panel">
+        <h2><span class="num">4</span> Side panel</h2>
+        <p>The side panel is your main control center:</p>
+        <ul>
+          <li><strong>Session name</strong> — Name the current recording (used when saving and in the report).</li>
+          <li><strong>Start / Stop recording</strong> — Begin or end a recording session.</li>
+          <li><strong>View report</strong> — Opens the report page with all steps and screenshots (available after you stop recording).</li>
+          <li><strong>Export</strong> — Save as PDF (direct file), or download HTML or JSON. You can also export from the report view.</li>
+          <li><strong>Sessions</strong> — Save the current report with a name and tags; load a previously saved session.</li>
+          <li><strong>Settings</strong> — Screenshot delay, max steps, dark/light theme, and optional Help link.</li>
+        </ul>
+      </section>
+
+      <section class="section" id="recording">
+        <h2><span class="num">5</span> Recording</h2>
+        <h3>What gets recorded</h3>
+        <p><strong>Clicks</strong>, <strong>inputs</strong> (on blur — when you leave the field), <strong>select</strong> and <strong>checkbox/radio</strong> changes, <strong>form submits</strong>, and <strong>navigation</strong>. A screenshot is taken after each action; the target element is briefly highlighted in the capture for clarity.</p>
+        <h3>Start / Stop</h3>
+        <ul>
+          <li><strong>Start recording</strong> — Begins capturing on the active tab. Make sure the tab is on a normal web page (http/https). Chrome/extension pages cannot be recorded.</li>
+          <li><strong>Stop recording</strong> — Ends the session. The report is built automatically. You can then view it or export.</li>
+        </ul>
+        <h3>Session name</h3>
+        <p>Set a <strong>session name</strong> before or after recording. It appears in the report header and when you save the session.</p>
+      </section>
+
+      <section class="section" id="report">
+        <h2><span class="num">6</span> Report &amp; steps</h2>
+        <p>After you stop recording, the extension builds a <strong>report</strong> with:</p>
+        <ul>
+          <li><strong>Session name</strong> and timestamp.</li>
+          <li><strong>Step list</strong> — Each step shows the action type (click, type, navigate, etc.), a short description, and the <strong>screenshot</strong> taken after that action (with the target element highlighted).</li>
+        </ul>
+        <p>Open the report via <strong>View report</strong> in the side panel. From the report page you can scroll through all steps and use <strong>Save PDF</strong>, <strong>HTML</strong>, or <strong>JSON</strong> to export.</p>
+      </section>
+
+      <section class="section" id="export">
+        <h2><span class="num">7</span> Export</h2>
+        <p>Export your test evidence in three formats:</p>
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>PDF</strong></td><td>Direct file download. Opens in the report view; use <strong>Save PDF</strong> to get a single PDF with all steps and screenshots. No print dialog — saves straight to your chosen location.</td></tr>
+            <tr><td><strong>HTML</strong></td><td>Self-contained HTML file with embedded images. Open in any browser to view or share.</td></tr>
+            <tr><td><strong>JSON</strong></td><td>Structured data (session name, steps, screenshot data). Use for tooling, archiving, or custom reports.</td></tr>
+          </tbody>
+        </table>
+        <p>You can export from the <strong>side panel</strong> (after stopping) or from the <strong>report view</strong>.</p>
+      </section>
+
+      <section class="section" id="sessions">
+        <h2><span class="num">8</span> Sessions</h2>
+        <p>Save and load recording sessions so you can keep multiple reports and revisit them later.</p>
+        <ul>
+          <li><strong>Save</strong> — Save the current report with a name and optional tags. Stored locally in the browser.</li>
+          <li><strong>Load</strong> — Open a saved session from the list. The report is restored; you can view it or export again.</li>
+          <li><strong>Delete</strong> — Remove a saved session (with confirmation).</li>
+        </ul>
+      </section>
+
+      <section class="section" id="settings">
+        <h2><span class="num">9</span> Settings</h2>
+        <p>Configure behavior and appearance:</p>
+        <ul>
+          <li><strong>Screenshot delay</strong> — Short delay (ms) after each action before the screenshot is taken, so the UI can settle (e.g. highlights, animations).</li>
+          <li><strong>Max steps</strong> — Maximum number of steps per recording (helps avoid huge reports).</li>
+          <li><strong>Theme</strong> — Light, dark, or system. Affects the side panel and report view.</li>
+          <li><strong>Help URL</strong> — If your deployment sets a help URL in config, a Help link appears in the UI (e.g. to your internal docs).</li>
+        </ul>
+        <p>Settings are stored locally. Deployers can override defaults via <code>config.json</code> (see the project README).</p>
+      </section>
+
+      <section class="section" id="tips">
+        <h2><span class="num">10</span> Tips &amp; troubleshooting</h2>
+        <ul>
+          <li><strong>“No valid webpage” / recording doesn’t start</strong> — Ensure the active tab is a normal web page (http or https). Chrome/extension pages (e.g. <code>chrome://</code>, <code>edge://</code>) cannot be recorded.</li>
+          <li><strong>Content script or messaging errors</strong> — Refresh the page you’re recording and try again so the content script loads.</li>
+          <li><strong>Screenshots missing or blank</strong> — Some pages (e.g. with strict CSP or cross-origin frames) may block screenshots. Try on a simpler page to confirm the extension works.</li>
+          <li><strong>PDF export</strong> — Use <strong>View report</strong> then <strong>Save PDF</strong> from the report page for the best result. Large reports may take a few seconds to generate.</li>
+          <li><strong>Too many steps</strong> — Use the <strong>Max steps</strong> setting to cap the number of steps per recording.</li>
+        </ul>
+        <div class="callout">
+          <strong>QA tip:</strong> Name your session before recording (e.g. “Login flow – Chrome”) so the report and saved sessions are easy to find later.
+        </div>
+      </section>
+
+      <footer class="main-footer">
+        <p>FlowMint Test Evidence — User Guide. Data is stored locally; no analytics. For configuration and deployment, see the project README and docs.</p>
+      </footer>
+    </main>
+  </div>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="site-footer-inner">
+      <div class="site-footer-left">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" fill="none">
+            <rect width="128" height="128" rx="28" fill="#0d9488"/>
+            <rect x="14" y="14" width="100" height="100" rx="8" fill="white" opacity="0.98"/>
+            <path d="M114 14v16h-16L114 14z" fill="white" opacity="0.9"/>
+            <circle cx="64" cy="64" r="22" fill="#0d9488"/>
+            <path d="M52 64l12 12 24-24" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </span>
+        <p class="site-footer-copy">© <span id="year">2025</span> FlowMint. All rights reserved.</p>
+      </div>
+      <nav class="site-footer-links" aria-label="Footer links">
+        <a href="index.html">Home</a>
+        <a href="FlowMint_Recorder/user-guide.html">FlowMint Recorder</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+    // Fix TOC: hash-only links must point to current page so they scroll, not navigate (base tag breaks #section)
+    (function() {
+      var tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+      var path = location.pathname || 'FlowMint_Test_Evidence/user-guide.html';
+      tocLinks.forEach(function(a) {
+        a.href = path + a.getAttribute('href');
+      });
+    })();
+  </script>
+</body>
+</html>
